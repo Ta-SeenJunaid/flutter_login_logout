@@ -2,20 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/auth_provider.dart';
 
-class LoginScreen extends ConsumerStatefulWidget {
+class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
 
   @override
-  ConsumerState<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends ConsumerState<LoginScreen> {
-  final userCtrl = TextEditingController();
-  final passCtrl = TextEditingController();
-
-  @override
-  Widget build(BuildContext context) {
-    final authState = ref.watch(authStateProvider);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = TextEditingController();
+    final pass = TextEditingController();
 
     return Scaffold(
       appBar: AppBar(title: const Text('Login')),
@@ -23,33 +16,18 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            TextField(
-              controller: userCtrl,
-              decoration: const InputDecoration(labelText: 'Username'),
-            ),
-            TextField(
-              controller: passCtrl,
-              obscureText: true,
-              decoration: const InputDecoration(labelText: 'Password'),
-            ),
-            const SizedBox(height: 20),
-
-            authState.whenOrNull(
-                  error: (e, _) => Text(
-                    e.toString(),
-                    style: const TextStyle(color: Colors.red),
-                  ),
-                ) ??
-                const SizedBox(),
-
+            TextField(controller: user, decoration: const InputDecoration(labelText: 'Username')),
+            TextField(controller: pass, decoration: const InputDecoration(labelText: 'Password')),
             ElevatedButton(
               onPressed: () {
-                ref
-                    .read(authStateProvider.notifier)
-                    .login(userCtrl.text, passCtrl.text);
+                ref.read(authProvider.notifier).login(
+                      user.text,
+                      pass.text,
+                    );
               },
               child: const Text('Login'),
             ),
+            const Text('admin / 1234 → admin\nuser / 1234 → user'),
           ],
         ),
       ),

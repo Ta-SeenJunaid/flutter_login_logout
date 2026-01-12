@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../providers/auth_provider.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -14,12 +15,17 @@ class HomeScreen extends ConsumerWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () {
-              ref.read(authStateProvider.notifier).logout();
+              ref.read(authProvider.notifier).logout();
             },
           ),
         ],
       ),
-      body: const Center(child: Text('You are logged in 🎉')),
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () => context.go('/admin'),
+          child: const Text('Admin Page'),
+        ),
+      ),
     );
   }
 }

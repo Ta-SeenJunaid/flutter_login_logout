@@ -1,29 +1,30 @@
 import '../core/api/auth_api.dart';
-import '../core/storage/token_storage.dart';
+import '../core/storage/secure_token_storage.dart';
+import '../models/user_role.dart';
 
 class AuthService {
-  AuthService(this._api, this._storage);
+  AuthService(this.api, this.storage);
 
-  final AuthApi _api;
-  final TokenStorage _storage;
+  final AuthApi api;
+  final SecureTokenStorage storage;
 
-  Future<String?> login(String username, String password) async {
-    final response = await _api.login(username, password);
+  Future<void> login(String u, String p) async {
+    final res = await api.login(u, p);
 
-    if (response.accessToken.isNotEmpty) {
-      await _storage.save(response.accessToken);
-      return null;
-    }
-
-    return response.errorMessage;
+    await storage.save(
+      access: res['access'],
+      refresh: res['refresh'],
+      role: res['role'],
+    );
   }
 
-  Future<void> logout() async {
-    await _storage.clear();
-  }
+  Future<void> logout() => storage.clear();
 
-  Future<bool> isLoggedIn() async {
-    final token = await _storage.read();
-    return token != null && token.isNotEmpty;
+  Future<bool> isLoggedIn() async =>
+      (await storage.access()) != null;
+
+  Future<UserRole?> role() async {
+    final r = await storage.role();
+    return r == null ? null : UserRole.values.byName(r);
   }
 }
